@@ -1,72 +1,81 @@
 <html>
   <head>
 		<title> Earth </title>
-		<style>
-			body{
-					margin: 0;
-					overflow: hidden;
-			}
-
-			canvas{
-					background: black;
-			}
-		</style>
     <meta http-equiv="content-type" content="text/html; charset-UTF-8" />
+    <link rel="stylesheet" href="styles.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="js/three.js"></script>
 		<script src="js/three.min.js"></script>
 		<script src="js/OrbitControls.js"></script>
   </head>
   <body>
-		<canvas id="mycanvas"></canvas>
+
+    <a class="link" target="_blank" href="https://github.com/Jam3/orbit-controls">orbit-controls</a>
 		<script>
 			//whenever creating renderer, canvas gets created, can dynamically attach canvas to renderer
-			var renderer = new THREE.WebGLRenderer({canvas: document.getElementById('mycanvas'), antialias: true});
-			// canvas document.body.appendChild(renderer.domElement);
-			//renderer.setClearColor(00000);
+
+			var renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setSize(window.innerWidth, window.innerHeight);
 
 			// perspective camera, objects in distance appear farther away
 			// pass into camera the field of view and aspect ratio (passing ratio of renderer aka size of window), near and far
 			//The near and far make it so objects too close/far wont be rendered
-			var camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 3000);
-			// camera is by deault added to 0, 0, 0 positionX
-			//camera.position.set(0, 0, 0);
+
+			var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 5000);
+
+
+			// camera is by deault added to 0x, 0y, 0z position
+			camera.position.set(0, 400, 1000);
+
+
 			// create scene, the container object of our world
 			var scene = new THREE.Scene();
 
 
-			$('body').append(renderer.domElement);
+      //attach body to renderer
+      document.body.appendChild(renderer.domElement);
 
-
-			// add listener so that the object resize
-
+      // resizing appropriatley when screen size changes
 			window.addEventListener( 'resize', function(){
 				var width = window.innerWidth;
 				var height = window.innerHeight;
 				renderer.setSize(width, height);
-				camera.aspect = width / height;
+				camera.aspect = width/height;
 				camera.updateProjectionMatrix();
-
 			});
 
+      // move object about its position
+      let controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
 
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
+      //  scene background
+      let space = [
+        'right.png', 'left.png',
+        'top.png', 'bottom.png',
+        'front.png', 'back.png'
+      ];
+
+      // attach scene to background
+      let loader = new THREE.CubeTextureLoader();
+      scene.background = loader.load(space);
 
 
-
+      // create camera for earth
+      earthcamera = new THREE.CubeCamera(1,1000,500);
+      earthcamera.position.set(0,100,0);
+      scene.add(earthcamera);
 
 
 			// create a mesh that takes two params, geometry and Material
 			// geometry, the geometry of 3d object
 			// material, material of 3d object MeshBasicMaterial is solid colors, Phong - shiny surface with specular lights
 
-			var geometry = new THREE.SphereGeometry(.5, 32, 32);
+			var geometry = new THREE.SphereGeometry(350,50,50);
 			//var earthmaterial = new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('/Users/alaksatti/Desktop/earth/Images/earth.jpg'), side: THREE.DoubleSide});
 			//var material = new THREE.MeshBasicMaterial( earthmaterial );
 
-			var material = new THREE.MeshPhongMaterial({map: new THREE.TextureLoader().load('Images/earth2.jpg')});
+			var material = new THREE.MeshPhongMaterial({map: new THREE.TextureLoader().load('Images/earth.jpg')});
 
 			//var material = new THREE.MeshPhongMaterial({map: loader.load('Images/earth2.jpg')});
 			//material.map = THREE.ImageUtils.loadTexture('Images/earth.jpg');
@@ -75,13 +84,26 @@
 			//var texture = THREE.ImageUtils.loadTexture('Images/earth.jpg');
 			//var material = new THREE.MeshPhongMaterial( {map: texture} );
 			var earth = new THREE.Mesh(geometry,material);
+
+      // set position of earth
+
+      earth.position.set(0,100,0);
+
 			scene.add(earth);
 
-			// have to add light or esle you wont see it!!!!!
-			scene.add(new THREE.AmbientLight(0x333333));
+
+      scene.add(new THREE.AmbientLight(0x333333));
 			var light = new THREE.DirectionalLight(0xffffff, 1);
-			light.position.set(5,3,5);
+			light.position.set(5,100,5);
 			scene.add(light);
+
+
+      var animate = function(){
+        earth.rotation.y -= 0.005;
+        // earth.rotation.x += 0.0005;
+        requestAnimationFrame(animate);
+        renderer.render(scene,camera);
+      }
 
 			// because camera and mesh is by default at 0 0 0 position within our scene
 			// we wouldnt be able to see the object because the camera is on top of the meshbasic_frag
@@ -89,26 +111,12 @@
 			//eartmesh.position.set(0, 0, 0);
 
 
-			earth.position.set(0, 0, -5);
+      animate();
 
-			// rotate the position of object
+      renderer.render(scene,camera);
+      earthcamera.updateCubeMap(renderer,scene);
+      requestAnimationFrame(render);
 
-			//earth.rotation.x = 0;
-			//earth.rotation.y = 5;
-
-
-			// will pass into the renderer the camera and the scene to draw everything
-
-			renderer.render(scene, camera);
-
-
-			// animate object to move
-			var animate = function(){
-				earth.rotation.y += 0.005;
-				renderer.render(scene,camera);
-				requestAnimationFrame(animate);
-			}
-			animate();
 
     </script>
   </body>
