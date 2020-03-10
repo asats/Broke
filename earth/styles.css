@@ -1,0 +1,53 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+canvas {
+  display: block;
+  position: fixed;
+  top:0;
+  left:0;
+}
+
+/*.BrokeAsF {
+  color: white;
+  position: relative;
+  z-index: 99;
+  text-align: center;
+  line-height: 20em;
+
+}*/
+
+.link, .link:active, .info:visited {
+   text-decoration: none;
+   margin-top: 2%;
+   margin-left: 10%;
+   color: #fff;
+   z-index: 10;
+   position: absolute;
+ }
+ .link:hover {
+ }
+ .link::after, .link:hover::after {
+   content: ' ';
+   width: 100%;
+   left: 0;
+   background: #fff;
+   position: absolute;
+   -webkit-transition: all 0.05s ease-out;
+   -moz-transition: all 0.05s ease-out;
+   -ms-transition: all 0.05s ease-out;
+   -o-transition: all 0.05s ease-out;
+   transition: all 0.05s ease-out;
+ }
+ .link::after {
+   height: 0px;
+   bottom: 0px;
+ }
+ .link:hover::after {
+   height: 4px;
+   bottom: -4px;
+ }
